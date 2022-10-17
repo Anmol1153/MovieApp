@@ -3,7 +3,8 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import {
-    ActivityIndicator,
+  ActivityIndicator,
+  AsyncStorage,
   FlatList,
   Image,
   ScrollView,
@@ -13,29 +14,25 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
 
 import { AntDesign } from "@expo/vector-icons";
-import Buttons from "../../CustomComponents/Button/Button";
 import Cards from "../../CustomComponents/Cards/Card";
 import Card2 from "../../CustomComponents/Cards/card2";
-import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import images from "../../utils/images";
-export default function HomeScreen({navigation}) {
+import Style from "./style";
+export default function HomeScreen({ navigation }) {
   const [popular, setpopular] = useState([]);
   const [nowshowing, setshowing] = useState([]);
-  const [loading, setLoading] = useState(true)
- 
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     nowshowingdata();
     populardata();
   }, []);
 
   const nowshowingdata = () => {
-    setLoading(true)
+    setLoading(true);
     //now showing
     axios
       .get(
@@ -43,16 +40,15 @@ export default function HomeScreen({navigation}) {
       )
       .then((res) => {
         setshowing(res.data.results);
-        setLoading(false)
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
-        setLoading(false)
-
+        setLoading(false);
       });
   };
   const populardata = () => {
-    setLoading(true)
+    setLoading(true);
     //popular
     axios
       .get(
@@ -60,131 +56,130 @@ export default function HomeScreen({navigation}) {
       )
       .then((res) => {
         setpopular(res.data.results);
-        setLoading(false)
-
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
-        setLoading(false)
-
+        setLoading(false);
       });
   };
-  
+
   return (
-    <View style={styles.container}>
-       {loading ? <ActivityIndicator size={70} style={{ alignSelf: 'center', zIndex: 1, position: 'absolute', 
-    }} /> : null}
-     
-        <View style={styles.Horizontalview}>
-          <TouchableOpacity>
-          <Image
-              source={require("/home/anmol/ReactNativeProjects/MovieApp/src/images/Menu.png")}
-              style={{ width: 22, height: 22 }}
-            />         
-             </TouchableOpacity>
-          <Text style={styles.filmku}>FilmKu</Text>
-          <TouchableOpacity onPress={()=>{
-            navigation.navigate('Notification')
-          }}>
-            <Image
-              source={require("/home/anmol/ReactNativeProjects/MovieApp/src/images/Icon.png")}
-              style={{ width: 22, height: 22 }}
-            />
-          </TouchableOpacity>
+    <View style={Style.container}>
+      {loading ? (
+        <ActivityIndicator size={70} style={Style.ActivityIndicator} />
+      ) : null}
+
+      <View style={Style.Horizontalview}>
+        <TouchableOpacity
+          onPress={() => {
+            //  drawerNavigator()
+          }}
+        >
+          <Image source={images.Menu} style={Style.MenuImage} />
+        </TouchableOpacity>
+        <Text style={Style.filmku}>FilmKu</Text>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Notification");
+          }}
+        >
+          <Image source={images.icons} style={Style.NotificationImage} />
+        </TouchableOpacity>
+      </View>
+      <ScrollView>
+        <View style={Style.Horizontalview}>
+          <Text style={Style.nowshowing}>Now Showing</Text>
+          <View style={Style.nowshowingView1}>
+            <Text style={Style.SeeMoreText}>See more</Text>
+          </View>
         </View>
-        <ScrollView>
-        <View style={styles.Horizontalview}>
-          <Text style={styles.nowshowing}>Now Showing</Text>
-          <Buttons
-            buttonTitle="See more"
-            //  onPress={()=>{
-            //   alert('ghghg')
-            //  }}
-          />
-        </View>
-        <View style={{ height: hp(38) }}>
+        <View style={Style.nowShowingFlatlist}>
           <FlatList
             horizontal
             data={nowshowing}
             renderItem={({ item, index }) => {
               return (
                 <View>
-                    <TouchableOpacity onPress={()=>{
-                        navigation.navigate('Descriptionscreen', {index: index , screens: 'nowshowing'})
-                      
-                    }}>
-                         <Cards
-                    imageuri={{
-                      uri:
-                        "https://www.themoviedb.org/t/p/w500" +
-                        item.poster_path,
-                 
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("Descriptionscreen", {
+                        index: index,
+                        screens: "nowshowing",
+                      });
                     }}
-                    resize="contain"
-                  />
-                    </TouchableOpacity>
-                 
-                  <Text style={styles.moviename}>{item.original_title}</Text>
-                  <Text style={styles.rating}>
+                  >
+                    <Cards
+                      imageuri={{
+                        uri:
+                          "https://www.themoviedb.org/t/p/w500" +
+                          item.poster_path,
+                      }}
+                      resize="contain"
+                    />
+                  </TouchableOpacity>
+
+                  <Text style={Style.moviename}>{item.original_title}</Text>
+                  <Text style={Style.rating}>
                     <AntDesign name="star" size={12} color="gold" />
-                      {item.vote_average}/10 IMDb
+                    {item.vote_average}/10 IMDb
                   </Text>
                 </View>
               );
             }}
           />
         </View>
-       
-        <View style={styles.Horizontalview}>
-          <Text style={styles.nowshowing}>Popular</Text>
-          <Buttons
-            buttonTitle="See more"
-            //  onPress={()=>{
-            //   alert('ghghg')
-            //  }}
-          />
+
+        <View style={Style.Horizontalview}>
+          <Text style={Style.nowshowing}>Popular</Text>
+          <TouchableOpacity
+            onPress={() => {
+              AsyncStorage.clear();
+            }}
+          >
+            <View style={Style.SeeMoreView}>
+              <Text style={Style.SeeMoreText}>See more</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         <FlatList
-        style={styles.popularFlatlist}
+          style={Style.popularFlatlist}
           data={popular}
           renderItem={({ item, index }) => {
             return (
               <View>
-                  <TouchableOpacity onPress={()=>{
-                        navigation.navigate('Descriptionscreen', {index: index , screens: 'popular'})
-                      
-                    }}>
-
-                    
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Descriptionscreen", {
+                      index: index,
+                      screens: "popular",
+                    });
                   }}
                 >
-                  <Card2
-                    imageuri={{
-                      uri:
-                        "https://www.themoviedb.org/t/p/w500" +
-                        item.poster_path,
-                    }}
-                    resize="contain"
-                  />
-                
-                
-                  <View>
-                  <Text style={styles.card2moviename}>
-                    {item.original_title}
-                  </Text>
-                  <Text style={styles.ratingpopular}>
-                    <AntDesign name="star" size={12} color="gold" />
-                    {item.vote_average}/10 IMDb
-                  </Text> 
-                  <Text style={styles.ratingpopular}>Release Date: {item.release_date}</Text>
-                  </View> 
-                 
-                </View>
+                  <View style={Style.PopularrowView}>
+                    <Card2
+                      imageuri={{
+                        uri:
+                          "https://www.themoviedb.org/t/p/w500" +
+                          item.poster_path,
+                      }}
+                      resize="contain"
+                    />
+
+                    <View>
+                      <Text style={Style.card2moviename}>
+                        {item.original_title}
+                      </Text>
+                      <Text style={Style.ratingpopular}>
+                        <AntDesign name="star" size={12} color="gold" />
+                        {item.vote_average}/10 IMDb
+                      </Text>
+                      <Text style={Style.ratingpopular}>
+                        Release Date: {item.release_date}
+                      </Text>
+                    </View>
+                  </View>
                 </TouchableOpacity>
               </View>
             );
@@ -194,70 +189,3 @@ export default function HomeScreen({navigation}) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    width: wp(100),
-    height: hp(100),
-    marginTop: 30,
-    justifyContent:'center'
-  },
-  filmku: {
-    fontSize: 16,
-    color: "blue",
-    fontWeight: "900",
-    fontStyle: "normal",
-  },
-  Horizontalview: {
-    flexDirection: "row",
-    marginVertical: 20,
-    justifyContent: "space-between",
-    marginHorizontal: 24,
-  },
-  nowshowing: {
-    fontSize: 16,
-    color: "blue",
-    fontWeight: "900",
-    fontStyle: "normal",
-  },
-  moviename: {
-    fontSize: 14,
-    fontWeight: "700",
-    marginHorizontal: 10,
-    marginVertical: 12,
-    width: wp(40),
-    color: "black",
-    marginLeft: 24
-   
-  },
-  rating: {
-    fontSize: 12,
-    color: "grey",
-    marginHorizontal: 10,
-    fontWeight: "400",
-    marginLeft: 24
-  },
-  ratingpopular:{
-    fontSize: 12,
-    color: "grey",
-    fontWeight: "400",
-  },
-  card2moviename: {
-    fontSize: 16,
-    fontWeight: "500",
-marginTop: 18,
-    width: wp(55),
-    color: "black",
-  },
-  card2rating: {
-    fontSize: 14,
-    color: "grey",
-    marginHorizontal: 10,
-  },
-  popularFlatlist:{
-    marginBottom: 30,
-    
-  }
-});

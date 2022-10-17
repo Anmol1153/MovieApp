@@ -1,15 +1,6 @@
 import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import {
-  ActivityIndicator,
-  FlatList,
   Image,
   ImageBackground,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -19,22 +10,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import Buttons from "../../CustomComponents/Button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addfavourites,
   removebookmark,
 } from "../../Redux/favoriteMovies/FavouriteSlices";
+import Style from "./style";
+import images from "../../utils/images";
 export default function Descscreen({ navigation }) {
   const [nowshowing, setshowing] = useState([]);
-
-  const [color, setcolor] = useState("");
-
   const route = useRoute();
   const favouriteStore = useSelector((state) => state.favourite);
-  //   console.log('===store==',favouriteStore)
-
   const dispatch = useDispatch();
   useEffect(() => {
     if (route?.params?.screens == "popular") {
@@ -95,15 +81,15 @@ export default function Descscreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={Style.container}>
       <ImageBackground
         source={{
           uri: "https://www.themoviedb.org/t/p/w500" + nowshowing.poster_path,
         }}
         resizeMode="stretch"
-        style={styles.imagestyle}
+        style={Style.imagestyle}
       >
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={Style.view2}>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("Home");
@@ -113,7 +99,7 @@ export default function Descscreen({ navigation }) {
               name="arrow-back"
               size={20}
               color="white"
-              style={{ margin: 35 }}
+              style={Style.Ionicons}
             />
           </TouchableOpacity>
           <TouchableOpacity>
@@ -121,16 +107,16 @@ export default function Descscreen({ navigation }) {
               name="dots-three-horizontal"
               size={20}
               color="white"
-              style={{ margin: 35 }}
+              style={Style.Entypo}
             />
           </TouchableOpacity>
         </View>
-        <View style={styles.innerimageview}>
-          <View style={styles.titlehorizontalview}>
-            <Text style={styles.movietitle}>{nowshowing.original_title}</Text>
+        <View style={Style.innerimageview}>
+          <View style={Style.titlehorizontalview}>
+            <Text style={Style.movietitle}>{nowshowing.original_title}</Text>
             <TouchableOpacity onPress={() => AddToFavourites()}>
               <Image
-                source={require("/home/anmol/ReactNativeProjects/MovieApp/src/images/third.png")}
+                source={images.BookMark}
                 resizeMode={"cover"}
                 style={{
                   width: 19,
@@ -141,104 +127,28 @@ export default function Descscreen({ navigation }) {
               ></Image>
             </TouchableOpacity>
           </View>
-          <Text style={styles.rating}>
+          <Text style={Style.rating}>
             <Ionicons name="star" size={12} color="gold" />
             {nowshowing.vote_average}/10 IMDb
           </Text>
-          <View style={styles.Length_language_rating}>
-            <Text style={styles.horizontalLength}>Length</Text>
-            <Text style={styles.horizontalLength}>Language</Text>
-            <Text style={styles.horizontalLength}>Rating</Text>
+          <View style={Style.Length_language_rating}>
+            <Text style={Style.horizontalLength}>Length</Text>
+            <Text style={Style.horizontalLength}>Language</Text>
+            <Text style={Style.horizontalLength}>Rating</Text>
           </View>
-          <View style={styles.length_language_rating_value}>
-            <Text style={styles.horizontalvalueLength}></Text>
-            <Text style={styles.horizontalvalueLength}>
+          <View style={Style.length_language_rating_value}>
+            <Text style={Style.horizontalvalueLength}> 2hrs15min</Text>
+            <Text style={Style.horizontalvalueLength}>
               {nowshowing.original_language}
             </Text>
-            <Text style={styles.horizontalvalueLength}>
+            <Text style={Style.horizontalvalueLength}>
               {nowshowing.vote_average}
             </Text>
           </View>
-          <Text style={styles.Description}>Description</Text>
-          <Text style={styles.horizontalLength}>{nowshowing.overview}.</Text>
+          <Text style={Style.Description}>Description</Text>
+          <Text style={Style.horizontalLength}>{nowshowing.overview}.</Text>
         </View>
       </ImageBackground>
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    width: wp(100),
-    height: hp(100),
-  },
-  imageView: {
-    width: wp(100),
-    height: hp(35),
-    marginTop: 30,
-  },
-  imagestyle: {
-    width: wp(100),
-    height: hp(35),
-  },
-  innerimageview: {
-    width: wp(100),
-    height: hp(40),
-    backgroundColor: "white",
-    marginTop: "53%",
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    justifyContent: "center",
-  },
-  movietitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    width: 198,
-    marginLeft: 24,
-    marginTop: 10,
-  },
-  titlehorizontalview: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginEnd: 24,
-  },
-  rating: {
-    fontSize: 12,
-    color: "grey",
-    marginHorizontal: 10,
-    fontWeight: "400",
-    marginLeft: 24,
-  },
-  horizontalLength: {
-    fontSize: 12,
-    fontWeight: "400",
-    color: "grey",
-    marginHorizontal: 24,
-  },
-  horizontalvalueLength: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  Length_language_rating: {
-    flexDirection: "row",
-    marginLeft: 24,
-    marginTop: 15,
-    justifyContent: "space-between",
-    marginEnd: 100,
-  },
-  length_language_rating_value: {
-    flexDirection: "row",
-    marginLeft: 24,
-    justifyContent: "space-between",
-    marginEnd: 100,
-  },
-  Description: {
-    fontSize: 16,
-    fontWeight: "900",
-    width: 198,
-    marginLeft: 24,
-    marginTop: 10,
-    color: "midnightblue",
-  },
-});
